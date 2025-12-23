@@ -2,6 +2,8 @@ package main
 
 import (
 	"learn_gqlgen/graph"
+	//"learn_gqlgen/todo/repository"
+	"learn_gqlgen/todo/repository/memory"
 	"learn_gqlgen/todo/services"
 	"log"
 	"net/http"
@@ -23,7 +25,8 @@ func main() {
 		port = defaultPort
 	}
 
-	todoService := services.NewTodoService()
+	todoRepository := memory.NewTodoRepository()
+	todoService := services.NewTodoService(todoRepository)
 
 	resolver := &graph.Resolver{
 		TodoService: todoService,
