@@ -10,14 +10,18 @@ import (
 
 
 type MemoryImpl struct{
-	stockTodo map[string]*entity.Todo
+	stockTodo []*entity.Todo
 }
 
-func NewTodoRepository() *MemoryImpl {
-	return &MemoryImpl{}
+func NewTodoRepository(stockTodo []*entity.Todo) *MemoryImpl {
+	return &MemoryImpl{
+		stockTodo: stockTodo,
+	}
 }
 
-func (ntmi *MemoryImpl) Create(todo *entity.Todo) error {
+func (ntmi *MemoryImpl) Create(todo *entity.Todo) (*entity.Todo, error) {
 	fmt.Println("J'ai reçu la todo")
-	return nil
+	ntmi.stockTodo = append(ntmi.stockTodo, todo)
+	fmt.Println("Memory : ", todo)
+	return todo, nil
 }

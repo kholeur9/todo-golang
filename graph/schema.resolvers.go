@@ -18,29 +18,19 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		Text: input.Text,
 		UserID: input.UserID,
 	}
-
 	fmt.Println("New Todo : ", getNewTodo)
-
 	if r.TodoService == nil {
 		return &model.Todo{}, fmt.Errorf("Service non initié !")
 	}
-
 	res, err := r.TodoService.AddTodo(ctx, getNewTodo)
-
-	fmt.Println("REPONSE : ", res)
-	
 	if err != nil {
 		return &model.Todo{}, fmt.Errorf("Erreur sur l'ajout de la Todo.")
 	}
-
+	fmt.Println("Resolver : ", res)
 	return &model.Todo{
 		ID: res.ID,
 		Text: res.Text,
 		Done: res.Done,
-		User: &model.User{
-			ID: res.User.ID,
-			Name: res.User.Name,
-		},
 	}, nil
 }
 

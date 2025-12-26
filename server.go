@@ -3,6 +3,7 @@ package main
 import (
 	"learn_gqlgen/graph"
 	//"learn_gqlgen/todo/repository"
+	"learn_gqlgen/todo/entity"
 	"learn_gqlgen/todo/repository/memory"
 	"learn_gqlgen/todo/services"
 	"log"
@@ -24,16 +25,13 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-
-	todoRepository := memory.NewTodoRepository()
+	var todos []*entity.Todo
+	todoRepository := memory.NewTodoRepository(todos)
 	todoService := services.NewTodoService(todoRepository)
-
 	resolver := &graph.Resolver{
 		TodoService: todoService,
 	}
-
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: resolver}))
-
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})

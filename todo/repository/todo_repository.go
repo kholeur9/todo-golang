@@ -5,5 +5,5 @@ import (
 )
 
 type TodoRepository interface {
-	Create(todo *entity.Todo) error
+	Create(todo *entity.Todo) (*entity.Todo, error)
 }

@@ -10,5 +10,5 @@ import (
 // here.
 
 type Resolver struct{
-	TodoService services.TodoService
+	TodoService services.Services
 }
