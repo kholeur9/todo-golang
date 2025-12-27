@@ -14,29 +14,51 @@ import (
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	getNewTodo := entity.NewTodo{
-		Text: input.Text,
+	getNewTodo := &entity.NewTodo{
+		Text:   input.Text,
 		UserID: input.UserID,
 	}
-	fmt.Println("New Todo : ", getNewTodo)
 	if r.TodoService == nil {
-		return &model.Todo{}, fmt.Errorf("Service non initié !")
+		return nil, fmt.Errorf("Service non initié !")
 	}
 	res, err := r.TodoService.AddTodo(ctx, getNewTodo)
 	if err != nil {
-		return &model.Todo{}, fmt.Errorf("Erreur sur l'ajout de la Todo.")
+		return nil, fmt.Errorf("Erreur sur l'ajout de la Todo.")
 	}
-	fmt.Println("Resolver : ", res)
 	return &model.Todo{
-		ID: res.ID,
+		ID:   res.ID,
 		Text: res.Text,
 		Done: res.Done,
 	}, nil
 }
 
+// GetTodo is the resolver for the getTodo field.
+func (r *queryResolver) GetTodo(ctx context.Context, id string) (*model.Todo, error) {
+	todo, err := r.TodoService.GetTodo(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("Erreur lors de la récupération de la todo.")
+	}
+	return &model.Todo{
+		Text: todo.Text,
+		Done: todo.Done,
+	}, nil
+}
+
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+	var todos []*model.Todo
+	allTodos, err := r.TodoService.GetAllTodos(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("Erreur lors de la récupération des todos.")
+	}
+	for _, todo := range allTodos {
+		thisTodo := &model.Todo{
+			Text: todo.Text,
+			Done: todo.Done,
+		}
+		todos = append(todos, thisTodo)
+	}
+	return todos, nil
 }
 
 // Mutation returns MutationResolver implementation.

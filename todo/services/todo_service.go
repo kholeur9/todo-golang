@@ -21,7 +21,10 @@ func NewTodoService(repo repository.TodoRepository) *TodoServiceImpl {
 	}
 }
 
-func (tsi *TodoServiceImpl) AddTodo(ctx context.Context, input entity.NewTodo) (*entity.Todo, error) {
+func (tsi *TodoServiceImpl) AddTodo(ctx context.Context, input *entity.NewTodo) (*entity.Todo, error) {
+	if input.Text == "" {
+		return nil, fmt.Errorf("La todo ne peut pas étre vide.")
+	}
 	id := uuid.New().String()
 	todoInitiated := &entity.Todo{
 		ID: id,
@@ -34,4 +37,20 @@ func (tsi *TodoServiceImpl) AddTodo(ctx context.Context, input entity.NewTodo) (
 		return nil, fmt.Errorf("Erreur lors de l'insertion de la todo.")
 	}
 	return todo, nil
+}
+
+func (tsi *TodoServiceImpl) GetTodo(ctx context.Context, id string) (*entity.Todo, error) {
+	todoExists, err := tsi.repo.FindTodoById(id)
+	if err != nil {
+		return nil, fmt.Errorf("Erreur lors de la récupération de la Todo.")
+	}
+	return todoExists, nil
+}
+
+func (tsi *TodoServiceImpl) GetAllTodos(ctx context.Context) ([]*entity.Todo, error) {
+	allTodos, err := tsi.repo.FindAllTodos()
+	if err != nil {
+		return nil, fmt.Errorf("Impossible de récupérer les todos.")
+	}
+	return allTodos, nil
 }

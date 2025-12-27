@@ -20,8 +20,19 @@ func NewTodoRepository(stockTodo []*entity.Todo) *MemoryImpl {
 }
 
 func (ntmi *MemoryImpl) Create(todo *entity.Todo) (*entity.Todo, error) {
-	fmt.Println("J'ai reçu la todo")
 	ntmi.stockTodo = append(ntmi.stockTodo, todo)
-	fmt.Println("Memory : ", todo)
 	return todo, nil
+}
+
+func (ntmi *MemoryImpl) FindTodoById(id string) (*entity.Todo, error) {
+	for _, thisTodo := range ntmi.stockTodo {
+		if  thisTodo.ID == id {
+			return thisTodo, nil
+		}
+	}
+	return nil, fmt.Errorf("Todo non trouvé.")
+}
+
+func (ntmi *MemoryImpl) FindAllTodos() ([]*entity.Todo, error) {
+	return ntmi.stockTodo, nil
 }
