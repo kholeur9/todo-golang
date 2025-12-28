@@ -32,6 +32,24 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	}, nil
 }
 
+// UpdateTodo is the resolver for the updateTodo field.
+func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTodo) (*model.Todo, error) {
+	fmt.Println("Resolver : ", input)
+	getUpdateTodo := &entity.UpdateTodo{
+		TodoID: input.TodoID,
+		Text: input.Text,
+		Done: input.Done,
+	}
+	updatedTodo, err := r.TodoService.UpdateTodo(ctx, getUpdateTodo)
+	if err != nil {
+		return nil, fmt.Errorf("Erreur lors de la mise à jour de la todo.")
+	}
+	return &model.Todo{
+		Text: updatedTodo.Text,
+		Done: updatedTodo.Done,
+	}, nil
+}
+
 // GetTodo is the resolver for the getTodo field.
 func (r *queryResolver) GetTodo(ctx context.Context, id string) (*model.Todo, error) {
 	todo, err := r.TodoService.GetTodo(ctx, id)

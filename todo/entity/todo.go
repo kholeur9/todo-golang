@@ -5,6 +5,12 @@ type NewTodo struct {
 	UserID string `json:"userId"`
 }
 
+type UpdateTodo struct {
+	TodoID string
+	Text string
+	Done bool
+}
+
 type Todo struct {
 	ID string   `json:"id"`
 	Text string `json:"text"`

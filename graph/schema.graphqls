@@ -24,6 +24,13 @@ input NewTodo {
   userId: String!
 }
 
+input UpdateTodo {
+  todoId: String!
+  text: String!
+  done: Boolean!
+}
+
 type Mutation {
   createTodo(input: NewTodo!): Todo
+  updateTodo(input: UpdateTodo!): Todo
 }

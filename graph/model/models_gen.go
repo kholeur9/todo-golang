@@ -20,6 +20,12 @@ type Todo struct {
 	User *User  `json:"user"`
 }
 
+type UpdateTodo struct {
+	TodoID string `json:"todoId"`
+	Text   string `json:"text"`
+	Done   bool   `json:"done"`
+}
+
 type User struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`

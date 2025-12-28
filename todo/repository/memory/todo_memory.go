@@ -36,3 +36,15 @@ func (ntmi *MemoryImpl) FindTodoById(id string) (*entity.Todo, error) {
 func (ntmi *MemoryImpl) FindAllTodos() ([]*entity.Todo, error) {
 	return ntmi.stockTodo, nil
 }
+
+func (ntmi *MemoryImpl) Update(updateTodo *entity.UpdateTodo) (*entity.Todo, error) {
+	fmt.Println("J'ai reçu la todo à mettre à jour.")
+	for _, todo := range ntmi.stockTodo {
+		if updateTodo.TodoID == todo.ID {
+			todo.Text = updateTodo.Text
+			todo.Done = updateTodo.Done
+			return todo, nil
+		}
+	}
+	return nil, fmt.Errorf("Todo non mise à jour.")
+}
