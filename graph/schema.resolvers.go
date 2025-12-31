@@ -23,7 +23,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	}
 	res, err := r.TodoService.AddTodo(ctx, getNewTodo)
 	if err != nil {
-		return nil, fmt.Errorf("Erreur sur l'ajout de la Todo.")
+		return nil, err
 	}
 	return &model.Todo{
 		ID:   res.ID,
@@ -42,7 +42,7 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTod
 	}
 	updatedTodo, err := r.TodoService.UpdateTodo(ctx, getUpdateTodo)
 	if err != nil {
-		return nil, fmt.Errorf("Erreur lors de la mise à jour de la todo.")
+		return nil, err
 	}
 	return &model.Todo{
 		Text: updatedTodo.Text,
@@ -54,7 +54,7 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTod
 func (r *queryResolver) GetTodo(ctx context.Context, id string) (*model.Todo, error) {
 	todo, err := r.TodoService.GetTodo(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("Erreur lors de la récupération de la todo.")
+		return nil, err
 	}
 	return &model.Todo{
 		Text: todo.Text,

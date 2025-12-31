@@ -2,8 +2,9 @@ package services
 
 import (
 	"context"
-	"fmt"
+	//"fmt"
 	"learn_gqlgen/todo/entity"
+	"learn_gqlgen/todo/errors"
 	"learn_gqlgen/todo/repository"
 
 	//"learn_gqlgen/todo/repository/memory"
@@ -23,7 +24,7 @@ func NewTodoService(repo repository.TodoRepository) *TodoServiceImpl {
 
 func (tsi *TodoServiceImpl) AddTodo(ctx context.Context, input *entity.NewTodo) (*entity.Todo, error) {
 	if input.Text == "" {
-		return nil, fmt.Errorf("La todo ne peut pas étre vide.")
+		return nil, errors.ErrTodoDonotEmpty
 	}
 	id := uuid.New().String()
 	todoInitiated := &entity.Todo{
@@ -34,15 +35,18 @@ func (tsi *TodoServiceImpl) AddTodo(ctx context.Context, input *entity.NewTodo) 
 	}
 	todo, err := tsi.repo.Create(todoInitiated)
 	if err != nil {
-		return nil, fmt.Errorf("Erreur lors de l'insertion de la todo.")
+		return nil, err
 	}
 	return todo, nil
 }
 
 func (tsi *TodoServiceImpl) GetTodo(ctx context.Context, id string) (*entity.Todo, error) {
+	if id == "" {
+		return nil, errors.ErrTodoIdEmpty
+	}
 	todoExists, err := tsi.repo.FindTodoById(id)
 	if err != nil {
-		return nil, fmt.Errorf("Erreur lors de la récupération de la Todo.")
+		return nil, err
 	}
 	return todoExists, nil
 }
@@ -50,22 +54,25 @@ func (tsi *TodoServiceImpl) GetTodo(ctx context.Context, id string) (*entity.Tod
 func (tsi *TodoServiceImpl) GetAllTodos(ctx context.Context) ([]*entity.Todo, error) {
 	allTodos, err := tsi.repo.FindAllTodos()
 	if err != nil {
-		return nil, fmt.Errorf("Impossible de récupérer les todos.")
+		return nil, err
 	}
 	return allTodos, nil
 }
 
 func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.UpdateTodo) (*entity.Todo, error) {
 	if input.Text == "" {
-		return nil, fmt.Errorf("Veuillez indiquer une tâche à faire.")
+		return nil, errors.ErrTodoHasUpdateEmpty
 	}
 	id := input.TodoID
 	todoExists, err := tsi.repo.FindTodoById(id)
 	if err != nil {
-		return nil, fmt.Errorf("Impossoble de mettre à jour la Todo.")
+		return nil, err
 	}
 	var todo *entity.Todo
 	if todoExists.Text != input.Text && todoExists.Done == input.Done {
+		if todoExists.Done {
+			return nil, errors.ErrTodoAlreadyTrue
+		}
 		dataTextUpdate := &entity.UpdateTodo{
 			TodoID: todoExists.ID,
 			Text: input.Text,
@@ -73,10 +80,9 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 		}
 		thisUpdateTodo, err := tsi.repo.Update(dataTextUpdate)
 		if err != nil {
-			return nil, fmt.Errorf("Impossible de mettre à jour la todo.")
+			return nil, err
 		}
 		todo = thisUpdateTodo
-		fmt.Println("Service : ", todo)
 	} else if todoExists.Text == input.Text && todoExists.Done != input.Done {
 		dataDoneUpdate := &entity.UpdateTodo{
 			TodoID: todoExists.ID,
@@ -85,9 +91,20 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 		}
 		thisUpdateTodo, err := tsi.repo.Update(dataDoneUpdate)
 		if err != nil {
-			return nil, fmt.Errorf("Impossible de mettre à jour la todo.")
+			return nil, err
 		}
 		todo = thisUpdateTodo
+	} else if todoExists.Text != input.Text && todoExists.Done != input.Done {
+		dataAllUpdate := &entity.UpdateTodo{
+			TodoID: todoExists.ID,
+			Text: input.Text,
+			Done: false,
+		}
+		thisUpdate, err := tsi.repo.Update(dataAllUpdate)
+		todo = thisUpdate
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		return todoExists, nil
 	}

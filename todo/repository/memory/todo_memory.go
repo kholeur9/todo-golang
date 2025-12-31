@@ -4,6 +4,7 @@ import (
 	//"context"
 	"fmt"
 	"learn_gqlgen/todo/entity"
+	"learn_gqlgen/todo/errors"
 	//"learn_gqlgen/todo/repository"
 	//"learn_gqlgen/todo/repository"
 )
@@ -30,7 +31,7 @@ func (ntmi *MemoryImpl) FindTodoById(id string) (*entity.Todo, error) {
 			return thisTodo, nil
 		}
 	}
-	return nil, fmt.Errorf("Todo non trouvé.")
+	return nil, errors.ErrTodoNotFound
 }
 
 func (ntmi *MemoryImpl) FindAllTodos() ([]*entity.Todo, error) {
