@@ -33,20 +33,22 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 }
 
 // UpdateTodo is the resolver for the updateTodo field.
-func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTodo) (*model.Todo, error) {
-	fmt.Println("Resolver : ", input)
+func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTodo) (*model.UpdatedTodoPayload, error) {
 	getUpdateTodo := &entity.UpdateTodo{
 		TodoID: input.TodoID,
-		Text: input.Text,
-		Done: input.Done,
+		Text:   input.Text,
+		Done:   input.Done,
 	}
 	updatedTodo, err := r.TodoService.UpdateTodo(ctx, getUpdateTodo)
 	if err != nil {
 		return nil, err
 	}
-	return &model.Todo{
-		Text: updatedTodo.Text,
-		Done: updatedTodo.Done,
+	return &model.UpdatedTodoPayload{
+		Todo: &model.Todo{
+			Text: updatedTodo.Todo.Text,
+			Done: updatedTodo.Todo.Done,
+		},
+		Message: updatedTodo.Message,
 	}, nil
 }
 

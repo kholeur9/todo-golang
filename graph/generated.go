@@ -64,6 +64,11 @@ type ComplexityRoot struct {
 		User func(childComplexity int) int
 	}
 
+	UpdatedTodoPayload struct {
+		Message func(childComplexity int) int
+		Todo    func(childComplexity int) int
+	}
+
 	User struct {
 		ID   func(childComplexity int) int
 		Name func(childComplexity int) int
@@ -72,7 +77,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error)
-	UpdateTodo(ctx context.Context, input model.UpdateTodo) (*model.Todo, error)
+	UpdateTodo(ctx context.Context, input model.UpdateTodo) (*model.UpdatedTodoPayload, error)
 }
 type QueryResolver interface {
 	GetTodo(ctx context.Context, id string) (*model.Todo, error)
@@ -163,6 +168,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Todo.User(childComplexity), true
+
+	case "UpdatedTodoPayload.message":
+		if e.complexity.UpdatedTodoPayload.Message == nil {
+			break
+		}
+
+		return e.complexity.UpdatedTodoPayload.Message(childComplexity), true
+	case "UpdatedTodoPayload.todo":
+		if e.complexity.UpdatedTodoPayload.Todo == nil {
+			break
+		}
+
+		return e.complexity.UpdatedTodoPayload.Todo(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -461,7 +479,7 @@ func (ec *executionContext) _Mutation_updateTodo(ctx context.Context, field grap
 			return ec.resolvers.Mutation().UpdateTodo(ctx, fc.Args["input"].(model.UpdateTodo))
 		},
 		nil,
-		ec.marshalOTodo2ᚖlearn_gqlgenᚋgraphᚋmodelᚐTodo,
+		ec.marshalOUpdatedTodoPayload2ᚖlearn_gqlgenᚋgraphᚋmodelᚐUpdatedTodoPayload,
 		true,
 		false,
 	)
@@ -475,16 +493,12 @@ func (ec *executionContext) fieldContext_Mutation_updateTodo(ctx context.Context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Todo_id(ctx, field)
-			case "text":
-				return ec.fieldContext_Todo_text(ctx, field)
-			case "done":
-				return ec.fieldContext_Todo_done(ctx, field)
-			case "user":
-				return ec.fieldContext_Todo_user(ctx, field)
+			case "todo":
+				return ec.fieldContext_UpdatedTodoPayload_todo(ctx, field)
+			case "message":
+				return ec.fieldContext_UpdatedTodoPayload_message(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type UpdatedTodoPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -816,6 +830,74 @@ func (ec *executionContext) fieldContext_Todo_user(_ context.Context, field grap
 				return ec.fieldContext_User_name(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UpdatedTodoPayload_todo(ctx context.Context, field graphql.CollectedField, obj *model.UpdatedTodoPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_UpdatedTodoPayload_todo,
+		func(ctx context.Context) (any, error) {
+			return obj.Todo, nil
+		},
+		nil,
+		ec.marshalNTodo2ᚖlearn_gqlgenᚋgraphᚋmodelᚐTodo,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_UpdatedTodoPayload_todo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UpdatedTodoPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Todo_id(ctx, field)
+			case "text":
+				return ec.fieldContext_Todo_text(ctx, field)
+			case "done":
+				return ec.fieldContext_Todo_done(ctx, field)
+			case "user":
+				return ec.fieldContext_Todo_user(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Todo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UpdatedTodoPayload_message(ctx context.Context, field graphql.CollectedField, obj *model.UpdatedTodoPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_UpdatedTodoPayload_message,
+		func(ctx context.Context) (any, error) {
+			return obj.Message, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_UpdatedTodoPayload_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UpdatedTodoPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2606,6 +2688,50 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var updatedTodoPayloadImplementors = []string{"UpdatedTodoPayload"}
+
+func (ec *executionContext) _UpdatedTodoPayload(ctx context.Context, sel ast.SelectionSet, obj *model.UpdatedTodoPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, updatedTodoPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UpdatedTodoPayload")
+		case "todo":
+			out.Values[i] = ec._UpdatedTodoPayload_todo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "message":
+			out.Values[i] = ec._UpdatedTodoPayload_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var userImplementors = []string{"User"}
 
 func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *model.User) graphql.Marshaler {
@@ -3417,6 +3543,13 @@ func (ec *executionContext) marshalOTodo2ᚖlearn_gqlgenᚋgraphᚋmodelᚐTodo(
 		return graphql.Null
 	}
 	return ec._Todo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOUpdatedTodoPayload2ᚖlearn_gqlgenᚋgraphᚋmodelᚐUpdatedTodoPayload(ctx context.Context, sel ast.SelectionSet, v *model.UpdatedTodoPayload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UpdatedTodoPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

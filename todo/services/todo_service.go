@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	//"fmt"
+	"learn_gqlgen/todo/dto"
 	"learn_gqlgen/todo/entity"
 	"learn_gqlgen/todo/errors"
 	"learn_gqlgen/todo/repository"
@@ -59,7 +60,7 @@ func (tsi *TodoServiceImpl) GetAllTodos(ctx context.Context) ([]*entity.Todo, er
 	return allTodos, nil
 }
 
-func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.UpdateTodo) (*entity.Todo, error) {
+func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.UpdateTodo) (*dto.TodoUpdateResult, error) {
 	if input.Text == "" {
 		return nil, errors.ErrTodoHasUpdateEmpty
 	}
@@ -69,6 +70,7 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 		return nil, err
 	}
 	var todo *entity.Todo
+	var message string
 	if todoExists.Text != input.Text && todoExists.Done == input.Done {
 		if todoExists.Done {
 			return nil, errors.ErrTodoAlreadyTrue
@@ -83,6 +85,7 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 			return nil, err
 		}
 		todo = thisUpdateTodo
+		message = "Votre todo a été modifié avec succès."
 	} else if todoExists.Text == input.Text && todoExists.Done != input.Done {
 		dataDoneUpdate := &entity.UpdateTodo{
 			TodoID: todoExists.ID,
@@ -94,6 +97,7 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 			return nil, err
 		}
 		todo = thisUpdateTodo
+		message = "Votre todo a été modifié avec succès."
 	} else if todoExists.Text != input.Text && todoExists.Done != input.Done {
 		dataAllUpdate := &entity.UpdateTodo{
 			TodoID: todoExists.ID,
@@ -101,12 +105,19 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 			Done: false,
 		}
 		thisUpdate, err := tsi.repo.Update(dataAllUpdate)
-		todo = thisUpdate
 		if err != nil {
 			return nil, err
 		}
+		todo = thisUpdate
+		message = "La tâche a été remise à false suite à la modification de son contenu."
 	} else {
-		return todoExists, nil
+		return &dto.TodoUpdateResult{
+			Todo: todoExists,
+			Message: "Aucune modification n'a été appliqué. Vous n'avez rien modifié.",
+		}, nil
 	}
-	return todo, nil
+	return &dto.TodoUpdateResult{
+		Todo: todo,
+		Message: message,
+	}, nil
 }

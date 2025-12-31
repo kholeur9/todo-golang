@@ -26,6 +26,11 @@ type UpdateTodo struct {
 	Done   bool   `json:"done"`
 }
 
+type UpdatedTodoPayload struct {
+	Todo    *Todo  `json:"todo"`
+	Message string `json:"message"`
+}
+
 type User struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`

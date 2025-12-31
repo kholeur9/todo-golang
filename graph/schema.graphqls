@@ -30,7 +30,12 @@ input UpdateTodo {
   done: Boolean!
 }
 
+type UpdatedTodoPayload {
+  todo: Todo!
+  message: String!
+}
+
 type Mutation {
   createTodo(input: NewTodo!): Todo
-  updateTodo(input: UpdateTodo!): Todo
+  updateTodo(input: UpdateTodo!): UpdatedTodoPayload
 }
