@@ -24,18 +24,27 @@ input NewTodo {
   userId: String!
 }
 
+interface MutationPayload {
+  message: String!
+}
+
 input UpdateTodo {
   todoId: String!
   text: String!
   done: Boolean!
 }
 
-type UpdatedTodoPayload {
+type UpdatedTodoPayload implements MutationPayload {
   todo: Todo!
+  message: String!
+}
+
+type DeleteTodoPayload implements MutationPayload {
   message: String!
 }
 
 type Mutation {
   createTodo(input: NewTodo!): Todo
   updateTodo(input: UpdateTodo!): UpdatedTodoPayload
+  deleteTodo(input: String!): DeleteTodoPayload
 }
