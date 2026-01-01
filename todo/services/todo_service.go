@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"time"
 	//"fmt"
 	"learn_gqlgen/todo/dto"
 	"learn_gqlgen/todo/entity"
@@ -33,6 +34,8 @@ func (tsi *TodoServiceImpl) AddTodo(ctx context.Context, input *entity.NewTodo) 
 		Text: input.Text,
 		Done: false,
 		User: &entity.User{ID: input.UserID, Name: "John Doe"},
+		CreatedAt: time.Now(),
+		UpdatedAt: nil,
 	}
 	todo, err := tsi.repo.Create(todoInitiated)
 	if err != nil {
@@ -71,6 +74,7 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 	}
 	var todo *entity.Todo
 	var message string
+	now := time.Now()
 	if todoExists.Text != input.Text && todoExists.Done == input.Done {
 		if todoExists.Done {
 			return nil, errors.ErrTodoAlreadyTrue
@@ -79,6 +83,7 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 			TodoID: todoExists.ID,
 			Text: input.Text,
 			Done: todoExists.Done,
+			UpdatedAt: &now,
 		}
 		thisUpdateTodo, err := tsi.repo.Update(dataTextUpdate)
 		if err != nil {
@@ -91,6 +96,7 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 			TodoID: todoExists.ID,
 			Text: todoExists.Text,
 			Done: input.Done,
+			UpdatedAt: &now,
 		}
 		thisUpdateTodo, err := tsi.repo.Update(dataDoneUpdate)
 		if err != nil {
@@ -103,6 +109,7 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 			TodoID: todoExists.ID,
 			Text: input.Text,
 			Done: false,
+			UpdatedAt: &now,
 		}
 		thisUpdate, err := tsi.repo.Update(dataAllUpdate)
 		if err != nil {
@@ -130,11 +137,12 @@ func (tsi *TodoServiceImpl) DeleteTodo(ctx context.Context, id string) (*dto.Tod
 	if err != nil {
 		return nil, err
 	}
-	err = tsi.repo.Delete(getThisTodo.ID)
+	id, err = tsi.repo.Delete(getThisTodo.ID)
 	if err != nil {
 		return nil, err
 	}
 	return &dto.TodoDeleteResult{
+		ID: id,
 		Message: "Todo supprimée avec succès.",
 	}, nil
 }

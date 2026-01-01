@@ -43,18 +43,19 @@ func (ntmi *MemoryImpl) Update(updateTodo *entity.UpdateTodo) (*entity.Todo, err
 		if todo.ID == updateTodo.TodoID {
 			todo.Text = updateTodo.Text
 			todo.Done = updateTodo.Done
+			todo.UpdatedAt = updateTodo.UpdatedAt
 			return todo, nil
 		}
 	}
 	return nil, errors.ErrTodoNoUpdate
 }
 
-func (ntmi *MemoryImpl) Delete(id string) error {
+func (ntmi *MemoryImpl) Delete(id string) (string, error) {
 	for i, todo := range ntmi.stockTodo {
 		if todo.ID == id {
 			ntmi.stockTodo = append(ntmi.stockTodo[:i], ntmi.stockTodo[i+1:]...)
-			return nil
+			return todo.ID, nil
 		}
 	}
-	return errors.ErrTodoDoNotDeleted
+	return "", errors.ErrTodoDoNotDeleted
 }

@@ -2,11 +2,15 @@
 #
 # https://gqlgen.com/getting-started/
 
+scalar Time
+
 type Todo {
   id: ID!
   text: String!
   done: Boolean!
   user: User!
+  createdAt: Time!
+  updatedAt: Time
 }
 
 type User {
@@ -40,6 +44,7 @@ type UpdatedTodoPayload implements MutationPayload {
 }
 
 type DeleteTodoPayload implements MutationPayload {
+  todoId: ID!
   message: String!
 }
 

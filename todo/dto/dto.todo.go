@@ -8,5 +8,6 @@ type TodoUpdateResult struct {
 }
 
 type TodoDeleteResult struct {
+	ID string
 	Message string
 }

@@ -26,9 +26,10 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		return nil, err
 	}
 	return &model.Todo{
-		ID:   res.ID,
-		Text: res.Text,
-		Done: res.Done,
+		ID:        res.ID,
+		Text:      res.Text,
+		Done:      res.Done,
+		CreatedAt: res.CreatedAt,
 	}, nil
 }
 
@@ -45,8 +46,11 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTod
 	}
 	return &model.UpdatedTodoPayload{
 		Todo: &model.Todo{
-			Text: updatedTodo.Todo.Text,
-			Done: updatedTodo.Todo.Done,
+			ID:        updatedTodo.Todo.ID,
+			Text:      updatedTodo.Todo.Text,
+			Done:      updatedTodo.Todo.Done,
+			CreatedAt: updatedTodo.Todo.CreatedAt,
+			UpdatedAt: updatedTodo.Todo.UpdatedAt,
 		},
 		Message: updatedTodo.Message,
 	}, nil
@@ -59,6 +63,7 @@ func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (*model.De
 		return nil, err
 	}
 	return &model.DeleteTodoPayload{
+		TodoID: result.ID,
 		Message: result.Message,
 	}, nil
 }
@@ -70,8 +75,11 @@ func (r *queryResolver) GetTodo(ctx context.Context, id string) (*model.Todo, er
 		return nil, err
 	}
 	return &model.Todo{
-		Text: todo.Text,
-		Done: todo.Done,
+		ID:        todo.ID,
+		Text:      todo.Text,
+		Done:      todo.Done,
+		CreatedAt: todo.CreatedAt,
+		UpdatedAt: todo.UpdatedAt,
 	}, nil
 }
 
@@ -84,8 +92,11 @@ func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	}
 	for _, todo := range allTodos {
 		thisTodo := &model.Todo{
-			Text: todo.Text,
-			Done: todo.Done,
+			ID:        todo.ID,
+			Text:      todo.Text,
+			Done:      todo.Done,
+			CreatedAt: todo.CreatedAt,
+			UpdatedAt: todo.UpdatedAt,
 		}
 		todos = append(todos, thisTodo)
 	}
