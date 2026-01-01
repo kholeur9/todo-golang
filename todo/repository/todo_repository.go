@@ -9,4 +9,5 @@ type TodoRepository interface {
 	FindTodoById(id string) (*entity.Todo, error)
 	FindAllTodos() ([]*entity.Todo, error)
 	Update(updateTodo *entity.UpdateTodo) (*entity.Todo, error)
+	Delete(id string) error
 }

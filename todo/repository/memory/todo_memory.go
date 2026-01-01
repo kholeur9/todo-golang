@@ -2,7 +2,7 @@ package memory
 
 import (
 	//"context"
-	"fmt"
+	//"fmt"
 	"learn_gqlgen/todo/entity"
 	"learn_gqlgen/todo/errors"
 	//"learn_gqlgen/todo/repository"
@@ -39,13 +39,22 @@ func (ntmi *MemoryImpl) FindAllTodos() ([]*entity.Todo, error) {
 }
 
 func (ntmi *MemoryImpl) Update(updateTodo *entity.UpdateTodo) (*entity.Todo, error) {
-	fmt.Println("J'ai reçu la todo à mettre à jour.")
 	for _, todo := range ntmi.stockTodo {
-		if updateTodo.TodoID == todo.ID {
+		if todo.ID == updateTodo.TodoID {
 			todo.Text = updateTodo.Text
 			todo.Done = updateTodo.Done
 			return todo, nil
 		}
 	}
-	return nil, fmt.Errorf("Todo non mise à jour.")
+	return nil, errors.ErrTodoNoUpdate
+}
+
+func (ntmi *MemoryImpl) Delete(id string) error {
+	for i, todo := range ntmi.stockTodo {
+		if todo.ID == id {
+			ntmi.stockTodo = append(ntmi.stockTodo[:i], ntmi.stockTodo[i+1:]...)
+			return nil
+		}
+	}
+	return errors.ErrTodoDoNotDeleted
 }

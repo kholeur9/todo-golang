@@ -6,3 +6,7 @@ type TodoUpdateResult struct {
 	Todo *entity.Todo
 	Message string
 }
+
+type TodoDeleteResult struct {
+	Message string
+}

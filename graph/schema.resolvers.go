@@ -52,6 +52,17 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTod
 	}, nil
 }
 
+// DeleteTodo is the resolver for the deleteTodo field.
+func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (*model.DeleteTodoPayload, error) {
+	result, err := r.TodoService.DeleteTodo(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return &model.DeleteTodoPayload{
+		Message: result.Message,
+	}, nil
+}
+
 // GetTodo is the resolver for the getTodo field.
 func (r *queryResolver) GetTodo(ctx context.Context, id string) (*model.Todo, error) {
 	todo, err := r.TodoService.GetTodo(ctx, id)

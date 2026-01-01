@@ -2,6 +2,18 @@
 
 package model
 
+type MutationPayload interface {
+	IsMutationPayload()
+	GetMessage() string
+}
+
+type DeleteTodoPayload struct {
+	Message string `json:"message"`
+}
+
+func (DeleteTodoPayload) IsMutationPayload()      {}
+func (this DeleteTodoPayload) GetMessage() string { return this.Message }
+
 type Mutation struct {
 }
 
@@ -30,6 +42,9 @@ type UpdatedTodoPayload struct {
 	Todo    *Todo  `json:"todo"`
 	Message string `json:"message"`
 }
+
+func (UpdatedTodoPayload) IsMutationPayload()      {}
+func (this UpdatedTodoPayload) GetMessage() string { return this.Message }
 
 type User struct {
 	ID   string `json:"id"`

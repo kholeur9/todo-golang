@@ -121,3 +121,20 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 		Message: message,
 	}, nil
 }
+
+func (tsi *TodoServiceImpl) DeleteTodo(ctx context.Context, id string) (*dto.TodoDeleteResult, error) {
+	if id == "" {
+		return nil, errors.ErrTodoIdEmpty
+	}
+	getThisTodo, err := tsi.repo.FindTodoById(id)
+	if err != nil {
+		return nil, err
+	}
+	err = tsi.repo.Delete(getThisTodo.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &dto.TodoDeleteResult{
+		Message: "Todo supprimée avec succès.",
+	}, nil
+}

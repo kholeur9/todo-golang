@@ -46,5 +46,5 @@ type DeleteTodoPayload implements MutationPayload {
 type Mutation {
   createTodo(input: NewTodo!): Todo
   updateTodo(input: UpdateTodo!): UpdatedTodoPayload
-  deleteTodo(input: String!): DeleteTodoPayload
+  deleteTodo(id: ID!): DeleteTodoPayload
 }
