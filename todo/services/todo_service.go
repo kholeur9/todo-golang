@@ -2,14 +2,18 @@ package services
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"strings"
+
+	//"strconv"
 	"time"
+
 	//"fmt"
 	"learn_gqlgen/todo/dto"
 	"learn_gqlgen/todo/entity"
-	"learn_gqlgen/todo/errors"
+	"learn_gqlgen/todo/errors_todo"
 	"learn_gqlgen/todo/repository"
-
-	//"learn_gqlgen/todo/repository/memory"
 
 	"github.com/google/uuid"
 )
@@ -26,12 +30,27 @@ func NewTodoService(repo repository.TodoRepository) *TodoServiceImpl {
 
 func (tsi *TodoServiceImpl) AddTodo(ctx context.Context, input *entity.NewTodo) (*entity.Todo, error) {
 	if input.Text == "" {
-		return nil, errors.ErrTodoDonotEmpty
+		return nil, errors_todo.ErrTodoDonotEmpty
 	}
+	if len(input.Text) > 200 {
+		return nil, errors_todo.ErrTodoTextTooLong
+	}
+	text := strings.TrimSpace(input.Text)
+	sameTodoText, err := tsi.repo.FindTodoByText(text)
+	if err != nil {
+		if !errors.Is(err, errors_todo.ErrTodoNotFound) {
+			return nil, err
+		}
+	} else {
+		if sameTodoText != nil {
+			return nil, errors_todo.ErrTodoDuplicate
+		}
+	}
+
 	id := uuid.New().String()
 	todoInitiated := &entity.Todo{
 		ID: id,
-		Text: input.Text,
+		Text: text,
 		Done: false,
 		User: &entity.User{ID: input.UserID, Name: "John Doe"},
 		CreatedAt: time.Now(),
@@ -46,7 +65,7 @@ func (tsi *TodoServiceImpl) AddTodo(ctx context.Context, input *entity.NewTodo) 
 
 func (tsi *TodoServiceImpl) GetTodo(ctx context.Context, id string) (*entity.Todo, error) {
 	if id == "" {
-		return nil, errors.ErrTodoIdEmpty
+		return nil, errors_todo.ErrTodoIdEmpty
 	}
 	todoExists, err := tsi.repo.FindTodoById(id)
 	if err != nil {
@@ -65,7 +84,7 @@ func (tsi *TodoServiceImpl) GetAllTodos(ctx context.Context) ([]*entity.Todo, er
 
 func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.UpdateTodo) (*dto.TodoUpdateResult, error) {
 	if input.Text == "" {
-		return nil, errors.ErrTodoHasUpdateEmpty
+		return nil, errors_todo.ErrTodoHasUpdateEmpty
 	}
 	id := input.TodoID
 	todoExists, err := tsi.repo.FindTodoById(id)
@@ -77,7 +96,7 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 	now := time.Now()
 	if todoExists.Text != input.Text && todoExists.Done == input.Done {
 		if todoExists.Done {
-			return nil, errors.ErrTodoAlreadyTrue
+			return nil, errors_todo.ErrTodoAlreadyTrue
 		}
 		dataTextUpdate := &entity.UpdateTodo{
 			TodoID: todoExists.ID,
@@ -131,18 +150,43 @@ func (tsi *TodoServiceImpl) UpdateTodo(ctx context.Context, input *entity.Update
 
 func (tsi *TodoServiceImpl) DeleteTodo(ctx context.Context, id string) (*dto.TodoDeleteResult, error) {
 	if id == "" {
-		return nil, errors.ErrTodoIdEmpty
+		return nil, errors_todo.ErrTodoIdEmpty
 	}
 	getThisTodo, err := tsi.repo.FindTodoById(id)
 	if err != nil {
 		return nil, err
 	}
-	id, err = tsi.repo.Delete(getThisTodo.ID)
+	err = tsi.repo.Delete(getThisTodo.ID)
 	if err != nil {
 		return nil, err
 	}
 	return &dto.TodoDeleteResult{
 		ID: id,
 		Message: "Todo supprimée avec succès.",
+	}, nil
+}
+
+func (tsi *TodoServiceImpl) DeleteTodos(ctx context.Context, IDs []string) (*dto.TodosDeleteResult, error) {
+	fmt.Println("J'ai reçu les ids à supprimer", IDs)
+	idsDeleted := []string{}
+	idsNotDeleted := []string{}
+
+	if len(IDs) == 0 {
+		return nil, errors_todo.ErrTodoIdEmpty
+	}
+	for _, id := range IDs {
+		err := tsi.repo.Delete(id)
+		if err == nil {
+			idsDeleted = append(idsDeleted, id)
+		}
+		if err != nil {
+			idsNotDeleted = append(idsNotDeleted, id)
+		}
+	}
+	message := fmt.Sprintf("%v supprimées, %v non supprimées.", len(idsDeleted), len(idsNotDeleted))
+	return &dto.TodosDeleteResult{
+		IDsDeleted: idsDeleted,
+		IDsNotDeleted: idsNotDeleted,
+		Message: message,
 	}, nil
 }

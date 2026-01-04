@@ -53,10 +53,17 @@ type ComplexityRoot struct {
 		TodoID  func(childComplexity int) int
 	}
 
+	DeleteTodosPayload struct {
+		IdsDeleted    func(childComplexity int) int
+		IdsNotDeleted func(childComplexity int) int
+		Message       func(childComplexity int) int
+	}
+
 	Mutation struct {
-		CreateTodo func(childComplexity int, input model.NewTodo) int
-		DeleteTodo func(childComplexity int, id string) int
-		UpdateTodo func(childComplexity int, input model.UpdateTodo) int
+		CreateTodo  func(childComplexity int, input model.NewTodo) int
+		DeleteTodo  func(childComplexity int, id string) int
+		DeleteTodos func(childComplexity int, input model.DeleteTodos) int
+		UpdateTodo  func(childComplexity int, input model.UpdateTodo) int
 	}
 
 	Query struct {
@@ -88,6 +95,7 @@ type MutationResolver interface {
 	CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error)
 	UpdateTodo(ctx context.Context, input model.UpdateTodo) (*model.UpdatedTodoPayload, error)
 	DeleteTodo(ctx context.Context, id string) (*model.DeleteTodoPayload, error)
+	DeleteTodos(ctx context.Context, input model.DeleteTodos) (*model.DeleteTodosPayload, error)
 }
 type QueryResolver interface {
 	GetTodo(ctx context.Context, id string) (*model.Todo, error)
@@ -126,6 +134,25 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.DeleteTodoPayload.TodoID(childComplexity), true
 
+	case "DeleteTodosPayload.idsDeleted":
+		if e.complexity.DeleteTodosPayload.IdsDeleted == nil {
+			break
+		}
+
+		return e.complexity.DeleteTodosPayload.IdsDeleted(childComplexity), true
+	case "DeleteTodosPayload.idsNotDeleted":
+		if e.complexity.DeleteTodosPayload.IdsNotDeleted == nil {
+			break
+		}
+
+		return e.complexity.DeleteTodosPayload.IdsNotDeleted(childComplexity), true
+	case "DeleteTodosPayload.message":
+		if e.complexity.DeleteTodosPayload.Message == nil {
+			break
+		}
+
+		return e.complexity.DeleteTodosPayload.Message(childComplexity), true
+
 	case "Mutation.createTodo":
 		if e.complexity.Mutation.CreateTodo == nil {
 			break
@@ -148,6 +175,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.DeleteTodo(childComplexity, args["id"].(string)), true
+	case "Mutation.deleteTodos":
+		if e.complexity.Mutation.DeleteTodos == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteTodos_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteTodos(childComplexity, args["input"].(model.DeleteTodos)), true
 	case "Mutation.updateTodo":
 		if e.complexity.Mutation.UpdateTodo == nil {
 			break
@@ -249,6 +287,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputDeleteTodos,
 		ec.unmarshalInputNewTodo,
 		ec.unmarshalInputUpdateTodo,
 	)
@@ -389,6 +428,17 @@ func (ec *executionContext) field_Mutation_deleteTodo_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteTodos_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNDeleteTodos2learn_gqlgenᚋgraphᚋmodelᚐDeleteTodos)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateTodo_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -522,6 +572,93 @@ func (ec *executionContext) _DeleteTodoPayload_message(ctx context.Context, fiel
 func (ec *executionContext) fieldContext_DeleteTodoPayload_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "DeleteTodoPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteTodosPayload_idsDeleted(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTodosPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DeleteTodosPayload_idsDeleted,
+		func(ctx context.Context) (any, error) {
+			return obj.IdsDeleted, nil
+		},
+		nil,
+		ec.marshalNID2ᚕstringᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DeleteTodosPayload_idsDeleted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteTodosPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteTodosPayload_idsNotDeleted(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTodosPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DeleteTodosPayload_idsNotDeleted,
+		func(ctx context.Context) (any, error) {
+			return obj.IdsNotDeleted, nil
+		},
+		nil,
+		ec.marshalNID2ᚕstringᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DeleteTodosPayload_idsNotDeleted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteTodosPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DeleteTodosPayload_message(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTodosPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_DeleteTodosPayload_message,
+		func(ctx context.Context) (any, error) {
+			return obj.Message, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_DeleteTodosPayload_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DeleteTodosPayload",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -675,6 +812,55 @@ func (ec *executionContext) fieldContext_Mutation_deleteTodo(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteTodo_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteTodos(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_deleteTodos,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().DeleteTodos(ctx, fc.Args["input"].(model.DeleteTodos))
+		},
+		nil,
+		ec.marshalODeleteTodosPayload2ᚖlearn_gqlgenᚋgraphᚋmodelᚐDeleteTodosPayload,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteTodos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "idsDeleted":
+				return ec.fieldContext_DeleteTodosPayload_idsDeleted(ctx, field)
+			case "idsNotDeleted":
+				return ec.fieldContext_DeleteTodosPayload_idsNotDeleted(ctx, field)
+			case "message":
+				return ec.fieldContext_DeleteTodosPayload_message(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DeleteTodosPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteTodos_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2643,6 +2829,33 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputDeleteTodos(ctx context.Context, obj any) (model.DeleteTodos, error) {
+	var it model.DeleteTodos
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"ids"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "ids":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
+			data, err := ec.unmarshalNID2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Ids = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj any) (model.NewTodo, error) {
 	var it model.NewTodo
 	asMap := map[string]any{}
@@ -2733,6 +2946,13 @@ func (ec *executionContext) _MutationPayload(ctx context.Context, sel ast.Select
 			return graphql.Null
 		}
 		return ec._UpdatedTodoPayload(ctx, sel, obj)
+	case model.DeleteTodosPayload:
+		return ec._DeleteTodosPayload(ctx, sel, &obj)
+	case *model.DeleteTodosPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._DeleteTodosPayload(ctx, sel, obj)
 	case model.DeleteTodoPayload:
 		return ec._DeleteTodoPayload(ctx, sel, &obj)
 	case *model.DeleteTodoPayload:
@@ -2797,6 +3017,55 @@ func (ec *executionContext) _DeleteTodoPayload(ctx context.Context, sel ast.Sele
 	return out
 }
 
+var deleteTodosPayloadImplementors = []string{"DeleteTodosPayload", "MutationPayload"}
+
+func (ec *executionContext) _DeleteTodosPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteTodosPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteTodosPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteTodosPayload")
+		case "idsDeleted":
+			out.Values[i] = ec._DeleteTodosPayload_idsDeleted(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "idsNotDeleted":
+			out.Values[i] = ec._DeleteTodosPayload_idsNotDeleted(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "message":
+			out.Values[i] = ec._DeleteTodosPayload_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -2827,6 +3096,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "deleteTodo":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteTodo(ctx, field)
+			})
+		case "deleteTodos":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteTodos(ctx, field)
 			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -3445,6 +3718,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNDeleteTodos2learn_gqlgenᚋgraphᚋmodelᚐDeleteTodos(ctx context.Context, v any) (model.DeleteTodos, error) {
+	res, err := ec.unmarshalInputDeleteTodos(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3459,6 +3737,36 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNID2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNID2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNID2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNID2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalNNewTodo2learn_gqlgenᚋgraphᚋmodelᚐNewTodo(ctx context.Context, v any) (model.NewTodo, error) {
@@ -3859,6 +4167,13 @@ func (ec *executionContext) marshalODeleteTodoPayload2ᚖlearn_gqlgenᚋgraphᚋ
 		return graphql.Null
 	}
 	return ec._DeleteTodoPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalODeleteTodosPayload2ᚖlearn_gqlgenᚋgraphᚋmodelᚐDeleteTodosPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteTodosPayload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DeleteTodosPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {

@@ -12,4 +12,5 @@ type Services interface {
 	GetAllTodos(ctx context.Context) ([]*entity.Todo, error)
 	UpdateTodo(ctx context.Context, input *entity.UpdateTodo) (*dto.TodoUpdateResult, error)
 	DeleteTodo(ctx context.Context, id string) (*dto.TodoDeleteResult, error)
+	DeleteTodos(cts context.Context, IDs []string) (*dto.TodosDeleteResult, error)
 }

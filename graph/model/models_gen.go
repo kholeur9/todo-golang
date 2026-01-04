@@ -19,6 +19,19 @@ type DeleteTodoPayload struct {
 func (DeleteTodoPayload) IsMutationPayload()      {}
 func (this DeleteTodoPayload) GetMessage() string { return this.Message }
 
+type DeleteTodos struct {
+	Ids []string `json:"ids"`
+}
+
+type DeleteTodosPayload struct {
+	IdsDeleted    []string `json:"idsDeleted"`
+	IdsNotDeleted []string `json:"idsNotDeleted"`
+	Message       string   `json:"message"`
+}
+
+func (DeleteTodosPayload) IsMutationPayload()      {}
+func (this DeleteTodosPayload) GetMessage() string { return this.Message }
+
 type Mutation struct {
 }
 

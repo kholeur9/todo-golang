@@ -63,8 +63,21 @@ func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (*model.De
 		return nil, err
 	}
 	return &model.DeleteTodoPayload{
-		TodoID: result.ID,
+		TodoID:  result.ID,
 		Message: result.Message,
+	}, nil
+}
+
+// DeleteTodos is the resolver for the deleteTodos field.
+func (r *mutationResolver) DeleteTodos(ctx context.Context, input model.DeleteTodos) (*model.DeleteTodosPayload, error) {
+	ids, err := r.TodoService.DeleteTodos(ctx, input.Ids)
+	if err != nil {
+		return nil, err
+	}
+	return &model.DeleteTodosPayload{
+		IdsDeleted: ids.IDsDeleted,
+		IdsNotDeleted: ids.IDsNotDeleted,
+		Message: ids.Message,
 	}, nil
 }
 

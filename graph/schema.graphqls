@@ -38,6 +38,10 @@ input UpdateTodo {
   done: Boolean!
 }
 
+input DeleteTodos {
+  ids: [ID!]!
+}
+
 type UpdatedTodoPayload implements MutationPayload {
   todo: Todo!
   message: String!
@@ -48,8 +52,15 @@ type DeleteTodoPayload implements MutationPayload {
   message: String!
 }
 
+type DeleteTodosPayload implements MutationPayload {
+  idsDeleted: [ID!]!
+  idsNotDeleted: [ID!]!
+  message: String!
+}
+
 type Mutation {
   createTodo(input: NewTodo!): Todo
   updateTodo(input: UpdateTodo!): UpdatedTodoPayload
   deleteTodo(id: ID!): DeleteTodoPayload
+  deleteTodos(input: DeleteTodos!): DeleteTodosPayload
 }

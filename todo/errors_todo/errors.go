@@ -1,8 +1,10 @@
-package errors
+package errors_todo
 
 import "errors"
 
 var ErrTodoDonotEmpty = errors.New("La todo ne peut pas être vide.")
+var ErrTodoTextTooLong = errors.New("Une todo ne peut pas excéder 200 caractères.")
+var ErrTodoDuplicate = errors.New("Attention ! Vous essayez de dupliquer un texte qui existe déjà.")
 var ErrTodoHasUpdateEmpty =  errors.New("La todo a modifié doit contenir un texte.")
 var ErrTodoNotFound = errors.New("La todo démandée n'existe pas.")
 var ErrTodoIdEmpty = errors.New("La recherche n'a pas pu être traîté.")

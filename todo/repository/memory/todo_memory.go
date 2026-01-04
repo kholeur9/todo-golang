@@ -1,12 +1,11 @@
 package memory
 
 import (
-	//"context"
+	//"fmt"
+	//"slices"
 	//"fmt"
 	"learn_gqlgen/todo/entity"
-	"learn_gqlgen/todo/errors"
-	//"learn_gqlgen/todo/repository"
-	//"learn_gqlgen/todo/repository"
+	"learn_gqlgen/todo/errors_todo"
 )
 
 
@@ -31,7 +30,16 @@ func (ntmi *MemoryImpl) FindTodoById(id string) (*entity.Todo, error) {
 			return thisTodo, nil
 		}
 	}
-	return nil, errors.ErrTodoNotFound
+	return nil, errors_todo.ErrTodoNotFound
+}
+
+func (ntmi *MemoryImpl) FindTodoByText(text string) (*entity.Todo, error) {
+	for _, todo := range ntmi.stockTodo {
+		if todo.Text == text {
+			return todo, nil
+		}
+	}
+	return nil, errors_todo.ErrTodoNotFound
 }
 
 func (ntmi *MemoryImpl) FindAllTodos() ([]*entity.Todo, error) {
@@ -47,15 +55,15 @@ func (ntmi *MemoryImpl) Update(updateTodo *entity.UpdateTodo) (*entity.Todo, err
 			return todo, nil
 		}
 	}
-	return nil, errors.ErrTodoNoUpdate
+	return nil, errors_todo.ErrTodoNoUpdate
 }
 
-func (ntmi *MemoryImpl) Delete(id string) (string, error) {
+func (ntmi *MemoryImpl) Delete(id string) error {
 	for i, todo := range ntmi.stockTodo {
 		if todo.ID == id {
 			ntmi.stockTodo = append(ntmi.stockTodo[:i], ntmi.stockTodo[i+1:]...)
-			return todo.ID, nil
+			return nil
 		}
 	}
-	return "", errors.ErrTodoDoNotDeleted
+	return errors_todo.ErrTodoDoNotDeleted
 }

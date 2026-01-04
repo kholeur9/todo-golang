@@ -11,3 +11,9 @@ type TodoDeleteResult struct {
 	ID string
 	Message string
 }
+
+type TodosDeleteResult struct {
+	IDsDeleted []string
+	IDsNotDeleted []string
+	Message string
+}
