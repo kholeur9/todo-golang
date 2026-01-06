@@ -12,6 +12,7 @@ import (
 	//"fmt"
 	"learn_gqlgen/todo/dto"
 	"learn_gqlgen/todo/entity"
+	model "learn_gqlgen/auth/entity"
 	"learn_gqlgen/todo/errors_todo"
 	"learn_gqlgen/todo/repository"
 
@@ -52,9 +53,8 @@ func (tsi *TodoServiceImpl) AddTodo(ctx context.Context, input *entity.NewTodo) 
 		ID: id,
 		Text: text,
 		Done: false,
-		User: &entity.User{ID: input.UserID, Name: "John Doe"},
+		User: &model.User{ID: input.UserID, Name: "John Doe"},
 		CreatedAt: time.Now(),
-		UpdatedAt: nil,
 	}
 	todo, err := tsi.repo.Create(todoInitiated)
 	if err != nil {

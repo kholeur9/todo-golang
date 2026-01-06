@@ -16,6 +16,10 @@ type Todo {
 type User {
   id: ID!
   name: String!
+  email: String!
+  passwordHashed: String!
+  createdAt: Time!
+  updatedAt: Time
 }
 
 type Query {

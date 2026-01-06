@@ -1,6 +1,9 @@
 package entity
 
-import "time"
+import (
+	"learn_gqlgen/auth/entity"
+	"time"
+)
 
 type NewTodo struct {
 	Text   string `json:"text"`
@@ -18,12 +21,7 @@ type Todo struct {
 	ID        string    `json:"id"`
 	Text      string    `json:"text"`
 	Done      bool      `json:"done"`
-	User      *User     `json:"user"`
+	User      *entity.User 	`json:"user"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
-}
-
-type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
 }

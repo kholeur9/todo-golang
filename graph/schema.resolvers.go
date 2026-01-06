@@ -75,9 +75,9 @@ func (r *mutationResolver) DeleteTodos(ctx context.Context, input model.DeleteTo
 		return nil, err
 	}
 	return &model.DeleteTodosPayload{
-		IdsDeleted: ids.IDsDeleted,
+		IdsDeleted:    ids.IDsDeleted,
 		IdsNotDeleted: ids.IDsNotDeleted,
-		Message: ids.Message,
+		Message:       ids.Message,
 	}, nil
 }
 

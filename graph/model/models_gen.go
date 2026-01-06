@@ -67,6 +67,10 @@ func (UpdatedTodoPayload) IsMutationPayload()      {}
 func (this UpdatedTodoPayload) GetMessage() string { return this.Message }
 
 type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID             string     `json:"id"`
+	Name           string     `json:"name"`
+	Email          string     `json:"email"`
+	PasswordHashed string     `json:"passwordHashed"`
+	CreatedAt      time.Time  `json:"createdAt"`
+	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
 }

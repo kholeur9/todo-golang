@@ -1,7 +1,8 @@
 package graph
 
 import (
-	"learn_gqlgen/todo/services"
+	todo "learn_gqlgen/todo/services"
+	auth "learn_gqlgen/auth/services"
 )
 
 // This file will not be regenerated automatically.
@@ -10,5 +11,6 @@ import (
 // here.
 
 type Resolver struct{
-	TodoService services.Services
+	TodoService todo.Services
+	AuthService auth.Services
 }
