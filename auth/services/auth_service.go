@@ -53,12 +53,13 @@ func (asi *AuthServicesImpl) Create(ctx context.Context, input entity.NewUser) (
 		HashedPassword: string(hashedPassword),
 		CreatedAt: time.Now(),
 	}
+	message := "Votre compte a été créée avec succès."
 	user, err := asi.repo.CreateAccount(initiatedUser)
 	if err != nil {
 		return nil, err
 	}
 	return &dto.CreateUserResult{
 		User: user,
-		Message: "",
+		Message: message,
 	}, nil
 }

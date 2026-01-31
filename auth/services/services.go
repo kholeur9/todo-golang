@@ -7,5 +7,5 @@ import (
 )
 
 type Services interface {
-	Create(ctx context.Context, input entity.NewUser) (*dto.CreateUserResult, error)
+	Create(ctx context.Context, input *entity.NewUser) (*dto.CreateUserResult, error)
 }
