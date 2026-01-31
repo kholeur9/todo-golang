@@ -48,6 +48,11 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	CreateUserPayload struct {
+		Message func(childComplexity int) int
+		User    func(childComplexity int) int
+	}
+
 	DeleteTodoPayload struct {
 		Message func(childComplexity int) int
 		TodoID  func(childComplexity int) int
@@ -101,7 +106,7 @@ type MutationResolver interface {
 	UpdateTodo(ctx context.Context, input model.UpdateTodo) (*model.UpdatedTodoPayload, error)
 	DeleteTodo(ctx context.Context, id string) (*model.DeleteTodoPayload, error)
 	DeleteTodos(ctx context.Context, input model.DeleteTodos) (*model.DeleteTodosPayload, error)
-	CreateUser(ctx context.Context, input model.NewUser) (*model.User, error)
+	CreateUser(ctx context.Context, input model.NewUser) (*model.CreateUserPayload, error)
 }
 type QueryResolver interface {
 	GetTodo(ctx context.Context, id string) (*model.Todo, error)
@@ -126,6 +131,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "CreateUserPayload.message":
+		if e.complexity.CreateUserPayload.Message == nil {
+			break
+		}
+
+		return e.complexity.CreateUserPayload.Message(childComplexity), true
+	case "CreateUserPayload.user":
+		if e.complexity.CreateUserPayload.User == nil {
+			break
+		}
+
+		return e.complexity.CreateUserPayload.User(childComplexity), true
 
 	case "DeleteTodoPayload.message":
 		if e.complexity.DeleteTodoPayload.Message == nil {
@@ -577,6 +595,78 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _CreateUserPayload_user(ctx context.Context, field graphql.CollectedField, obj *model.CreateUserPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_CreateUserPayload_user,
+		func(ctx context.Context) (any, error) {
+			return obj.User, nil
+		},
+		nil,
+		ec.marshalNUser2ᚖlearn_gqlgenᚋgraphᚋmodelᚐUser,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_CreateUserPayload_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateUserPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "passwordHashed":
+				return ec.fieldContext_User_passwordHashed(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateUserPayload_message(ctx context.Context, field graphql.CollectedField, obj *model.CreateUserPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_CreateUserPayload_message,
+		func(ctx context.Context) (any, error) {
+			return obj.Message, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_CreateUserPayload_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateUserPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _DeleteTodoPayload_todoId(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTodoPayload) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -931,7 +1021,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 			return ec.resolvers.Mutation().CreateUser(ctx, fc.Args["input"].(model.NewUser))
 		},
 		nil,
-		ec.marshalOUser2ᚖlearn_gqlgenᚋgraphᚋmodelᚐUser,
+		ec.marshalOCreateUserPayload2ᚖlearn_gqlgenᚋgraphᚋmodelᚐCreateUserPayload,
 		true,
 		false,
 	)
@@ -945,20 +1035,12 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_User_id(ctx, field)
-			case "name":
-				return ec.fieldContext_User_name(ctx, field)
-			case "email":
-				return ec.fieldContext_User_email(ctx, field)
-			case "passwordHashed":
-				return ec.fieldContext_User_passwordHashed(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_User_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "user":
+				return ec.fieldContext_CreateUserPayload_user(ctx, field)
+			case "message":
+				return ec.fieldContext_CreateUserPayload_message(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type CreateUserPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -3233,9 +3315,16 @@ func (ec *executionContext) _MutationPayload(ctx context.Context, sel ast.Select
 			return graphql.Null
 		}
 		return ec._DeleteTodoPayload(ctx, sel, obj)
+	case model.CreateUserPayload:
+		return ec._CreateUserPayload(ctx, sel, &obj)
+	case *model.CreateUserPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._CreateUserPayload(ctx, sel, obj)
 	default:
-		if obj, ok := obj.(graphql.Marshaler); ok {
-			return obj
+		if typedObj, ok := obj.(graphql.Marshaler); ok {
+			return typedObj
 		} else {
 			panic(fmt.Errorf("unexpected type %T; non-generated variants of MutationPayload must implement graphql.Marshaler", obj))
 		}
@@ -3245,6 +3334,50 @@ func (ec *executionContext) _MutationPayload(ctx context.Context, sel ast.Select
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var createUserPayloadImplementors = []string{"CreateUserPayload", "MutationPayload"}
+
+func (ec *executionContext) _CreateUserPayload(ctx context.Context, sel ast.SelectionSet, obj *model.CreateUserPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createUserPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateUserPayload")
+		case "user":
+			out.Values[i] = ec._CreateUserPayload_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "message":
+			out.Values[i] = ec._CreateUserPayload_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
 
 var deleteTodoPayloadImplementors = []string{"DeleteTodoPayload", "MutationPayload"}
 
@@ -4461,6 +4594,13 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
+func (ec *executionContext) marshalOCreateUserPayload2ᚖlearn_gqlgenᚋgraphᚋmodelᚐCreateUserPayload(ctx context.Context, sel ast.SelectionSet, v *model.CreateUserPayload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._CreateUserPayload(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalODeleteTodoPayload2ᚖlearn_gqlgenᚋgraphᚋmodelᚐDeleteTodoPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteTodoPayload) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -4523,13 +4663,6 @@ func (ec *executionContext) marshalOUpdatedTodoPayload2ᚖlearn_gqlgenᚋgraph�
 		return graphql.Null
 	}
 	return ec._UpdatedTodoPayload(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOUser2ᚖlearn_gqlgenᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

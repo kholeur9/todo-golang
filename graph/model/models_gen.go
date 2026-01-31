@@ -11,6 +11,14 @@ type MutationPayload interface {
 	GetMessage() string
 }
 
+type CreateUserPayload struct {
+	User    *User  `json:"user"`
+	Message string `json:"message"`
+}
+
+func (CreateUserPayload) IsMutationPayload()      {}
+func (this CreateUserPayload) GetMessage() string { return this.Message }
+
 type DeleteTodoPayload struct {
 	TodoID  string `json:"todoId"`
 	Message string `json:"message"`
