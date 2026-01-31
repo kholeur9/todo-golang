@@ -32,12 +32,9 @@ func (asi *AuthServicesImpl) Create(ctx context.Context, input entity.NewUser) (
 	if len(input.Name) == 1 {
 		return nil, errors.ErrNameNotTooLong
 	}
-	emailExists, err := asi.repo.FindUserByEmail(input.Email)
+	_, err := asi.repo.FindUserByEmail(input.Email)
 	if err != nil {
 		return nil, err
-	}
-	if emailExists != nil {
-		return nil, errors.ErrEmailAlreadyExists
 	}
 	if len(input.Password) < 8 {
 		return nil, errors.ErrPasswordTooShort
