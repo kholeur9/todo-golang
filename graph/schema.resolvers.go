@@ -107,7 +107,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 // LoginUser is the resolver for the LoginUser field.
 func (r *mutationResolver) LoginUser(ctx context.Context, input model.NewLogin) (*model.LoginUserPayload, error) {
 	userCredentials := dto.LoginInput{
-		Email: input.Email,
+		Email:    input.Email,
 		Password: input.Password,
 	}
 	user, err := r.AuthService.Login(ctx, userCredentials)
@@ -116,8 +116,8 @@ func (r *mutationResolver) LoginUser(ctx context.Context, input model.NewLogin) 
 	}
 	return &model.LoginUserPayload{
 		User: &model.User{
-			ID: user.User.ID,
-			Name: user.User.Name,
+			ID:    user.User.ID,
+			Name:  user.User.Name,
 			Email: user.User.Email,
 		},
 		Message: user.Message,

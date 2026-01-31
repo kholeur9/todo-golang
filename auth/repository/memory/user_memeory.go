@@ -26,5 +26,5 @@ func (mi *MemoryImpl) FindUserByEmail(email string) (*entity.User, error) {
 			return user, nil
 		}
 	}
-	return nil, errors.ErrEmailNotFound
+	return nil, errors.ErrIncorrectCredentials
 }

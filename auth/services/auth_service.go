@@ -35,7 +35,7 @@ func (asi *AuthServicesImpl) Create(ctx context.Context, input dto.RegisterInput
 	}
 	emailExists, err := asi.repo.FindUserByEmail(input.Email)
 	if err != nil {
-		if !errors.Is(err, errors_auth.ErrEmailNotFound) {
+		if !errors.Is(err, errors_auth.ErrIncorrectCredentials) {
 			return nil, err
 		}
 	} else {

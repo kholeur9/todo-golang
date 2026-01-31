@@ -90,5 +90,5 @@ type Mutation {
   deleteTodos(input: DeleteTodos!): DeleteTodosPayload
 
   createUser(input: NewUser!): CreateUserPayload
-  LoginUser(input: NewLogin!): LoginUserPayload
+  loginUser(input: NewLogin!): LoginUserPayload
 }
