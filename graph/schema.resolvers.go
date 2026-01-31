@@ -8,13 +8,14 @@ package graph
 import (
 	"context"
 	"fmt"
+	//"learn_gqlgen/auth/entity"
 	"learn_gqlgen/graph/model"
-	"learn_gqlgen/todo/entity"
+	entity_todo "learn_gqlgen/todo/entity"
 )
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	getNewTodo := &entity.NewTodo{
+	getNewTodo := &entity_todo.NewTodo{
 		Text:   input.Text,
 		UserID: input.UserID,
 	}
@@ -35,7 +36,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 
 // UpdateTodo is the resolver for the updateTodo field.
 func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTodo) (*model.UpdatedTodoPayload, error) {
-	getUpdateTodo := &entity.UpdateTodo{
+	getUpdateTodo := &entity_todo.UpdateTodo{
 		TodoID: input.TodoID,
 		Text:   input.Text,
 		Done:   input.Done,
@@ -79,6 +80,21 @@ func (r *mutationResolver) DeleteTodos(ctx context.Context, input model.DeleteTo
 		IdsNotDeleted: ids.IDsNotDeleted,
 		Message:       ids.Message,
 	}, nil
+}
+
+// CreateUser is the resolver for the createUser field.
+func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
+	fmt.Println("User infos : ", input)
+	/**getNewUser := &entity.NewUser{
+		Name: input.Name,
+		Email: input.Email,
+		Password: input.Password,
+	}*/
+	//user, err := r.AuthService.Create(ctx, getNewUser)
+	/**if err != nil {
+		return nil, err
+	}*/
+	return &model.User{}, nil
 }
 
 // GetTodo is the resolver for the getTodo field.

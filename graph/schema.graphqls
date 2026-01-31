@@ -32,7 +32,18 @@ input NewTodo {
   userId: String!
 }
 
+input NewUser {
+  name: String!
+  email: String!
+  password: String!
+}
+
 interface MutationPayload {
+  message: String!
+}
+
+type CreateUserPayload implements MutationPayload {
+  user: User!
   message: String!
 }
 
@@ -67,4 +78,6 @@ type Mutation {
   updateTodo(input: UpdateTodo!): UpdatedTodoPayload
   deleteTodo(id: ID!): DeleteTodoPayload
   deleteTodos(input: DeleteTodos!): DeleteTodosPayload
+
+  createUser(input: NewUser!): User
 }
