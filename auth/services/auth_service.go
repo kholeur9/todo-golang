@@ -48,7 +48,7 @@ func (asi *AuthServicesImpl) Create(ctx context.Context, input dto.RegisterInput
 	}
 	// Create User
 	id := uuid.New().String()
-	hashedPassword, _ := (bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost))
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	initiatedUser := &entity.User{
 		ID: id,
 		Name: input.Name,
@@ -68,5 +68,24 @@ func (asi *AuthServicesImpl) Create(ctx context.Context, input dto.RegisterInput
 }
 
 func (asi *AuthServicesImpl) Login(ctx context.Context, input dto.LoginInput) (*dto.LoginResult, error) {
-	return nil, nil
+	if input.Email == "" || input.Password == "" {
+		return nil, errors_auth.ErrInfoNotCompleted
+	}
+	user, err := asi.repo.FindUserByEmail(input.Email)
+	if err != nil {
+		return nil, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(input.Password))
+	if err != nil {
+		return nil, errors_auth.ErrIncorrectCredentials
+	}
+	// Login User
+	return &dto.LoginResult{
+		User: &entity.User{
+			ID: user.ID,
+			Name: user.Name,
+			Email: user.Email,
+		},
+		Message: "",
+	}, nil
 }
