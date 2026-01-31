@@ -2,12 +2,13 @@ package services
 
 import (
 	"context"
-	"fmt"
+	"errors"
+	//"fmt"
 
 	//"learn_gqlgen/auth/dto"
 	"learn_gqlgen/auth/dto"
 	"learn_gqlgen/auth/entity"
-	errors "learn_gqlgen/auth/errors_auth"
+	errors_auth "learn_gqlgen/auth/errors_auth"
 	"learn_gqlgen/auth/repository"
 	"time"
 
@@ -25,24 +26,29 @@ func NewAuthService(repo repository.UserRepository) *AuthServicesImpl {
 	}
 }
 
-func (asi *AuthServicesImpl) Create(ctx context.Context, input entity.NewUser) (*dto.CreateUserResult, error) {
-	if input.Name == "" && input.Email == "" && input.Password == "" {
-		return nil, errors.ErrInfoNotCompleted
+func (asi *AuthServicesImpl) Create(ctx context.Context, input dto.RegisterInput) (*dto.CreateUserResult, error) {
+	if input.Name == "" || input.Email == "" || input.Password == "" {
+		return nil, errors_auth.ErrInfoNotCompleted
 	}
 	if len(input.Name) == 1 {
-		return nil, errors.ErrNameNotTooLong
+		return nil, errors_auth.ErrNameNotTooLong
 	}
-	_, err := asi.repo.FindUserByEmail(input.Email)
+	emailExists, err := asi.repo.FindUserByEmail(input.Email)
 	if err != nil {
-		return nil, err
+		if !errors.Is(err, errors_auth.ErrEmailNotFound) {
+			return nil, err
+		}
+	} else {
+		if emailExists != nil {
+			return nil, errors_auth.ErrEmailAlreadyExists
+		}
 	}
 	if len(input.Password) < 8 {
-		return nil, errors.ErrPasswordTooShort
+		return nil, errors_auth.ErrPasswordTooShort
 	}
 	// Create User
 	id := uuid.New().String()
 	hashedPassword, _ := (bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost))
-	fmt.Println("Hashed Paswword: ", string(hashedPassword))
 	initiatedUser := &entity.User{
 		ID: id,
 		Name: input.Name,
@@ -59,4 +65,8 @@ func (asi *AuthServicesImpl) Create(ctx context.Context, input entity.NewUser) (
 		User: user,
 		Message: message,
 	}, nil
+}
+
+func (asi *AuthServicesImpl) Login(ctx context.Context, input dto.LoginInput) (*dto.LoginResult, error) {
+	return nil, nil
 }

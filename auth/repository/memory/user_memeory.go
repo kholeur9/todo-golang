@@ -23,8 +23,8 @@ func (mi *MemoryImpl) CreateAccount(user *entity.User) (*entity.User, error) {
 func (mi *MemoryImpl) FindUserByEmail(email string) (*entity.User, error) {
 	for _, user := range mi.stockUser {
 		if user.Email == email {
-			return user, nil 
+			return user, nil
 		}
 	}
-	return nil, errors.ErrEmailAlreadyExists
+	return nil, errors.ErrEmailNotFound
 }

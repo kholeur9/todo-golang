@@ -8,7 +8,7 @@ package graph
 import (
 	"context"
 	"fmt"
-	"learn_gqlgen/auth/entity"
+	"learn_gqlgen/auth/dto"
 	"learn_gqlgen/graph/model"
 	entity_todo "learn_gqlgen/todo/entity"
 )
@@ -85,9 +85,9 @@ func (r *mutationResolver) DeleteTodos(ctx context.Context, input model.DeleteTo
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.CreateUserPayload, error) {
 	fmt.Println("User infos : ", input)
-	getNewUser := &entity.NewUser{
-		Name: input.Name,
-		Email: input.Email,
+	getNewUser := dto.RegisterInput{
+		Name:     input.Name,
+		Email:    input.Email,
 		Password: input.Password,
 	}
 	user, err := r.AuthService.Create(ctx, getNewUser)
@@ -96,12 +96,17 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 	}
 	return &model.CreateUserPayload{
 		User: &model.User{
-			ID: user.User.ID,
-			Name: user.User.Name,
+			ID:    user.User.ID,
+			Name:  user.User.Name,
 			Email: user.User.Email,
 		},
 		Message: user.Message,
 	}, nil
+}
+
+// LoginUser is the resolver for the LoginUser field.
+func (r *mutationResolver) LoginUser(ctx context.Context, input model.NewLogin) (*model.LoginUserPayload, error) {
+	panic(fmt.Errorf("not implemented: LoginUser - LoginUser"))
 }
 
 // GetTodo is the resolver for the getTodo field.

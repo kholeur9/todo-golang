@@ -4,15 +4,6 @@
 
 scalar Time
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
-  createdAt: Time!
-  updatedAt: Time
-}
-
 type User {
   id: ID!
   name: String!
@@ -22,14 +13,18 @@ type User {
   updatedAt: Time
 }
 
+type Todo {
+  id: ID!
+  text: String!
+  done: Boolean!
+  user: User!
+  createdAt: Time!
+  updatedAt: Time
+}
+
 type Query {
   getTodo(id: ID!): Todo!
   todos: [Todo!]!
-}
-
-input NewTodo {
-  text: String!
-  userId: String!
 }
 
 input NewUser {
@@ -38,11 +33,26 @@ input NewUser {
   password: String!
 }
 
+input NewLogin {
+  email: String!
+  password: String!
+}
+
+input NewTodo {
+  text: String!
+  userId: String!
+}
+
 interface MutationPayload {
   message: String!
 }
 
 type CreateUserPayload implements MutationPayload {
+  user: User!
+  message: String!
+}
+
+type LoginUserPayload implements MutationPayload {
   user: User!
   message: String!
 }
@@ -80,4 +90,5 @@ type Mutation {
   deleteTodos(input: DeleteTodos!): DeleteTodosPayload
 
   createUser(input: NewUser!): CreateUserPayload
+  LoginUser(input: NewLogin!): LoginUserPayload
 }

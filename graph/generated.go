@@ -64,11 +64,17 @@ type ComplexityRoot struct {
 		Message       func(childComplexity int) int
 	}
 
+	LoginUserPayload struct {
+		Message func(childComplexity int) int
+		User    func(childComplexity int) int
+	}
+
 	Mutation struct {
 		CreateTodo  func(childComplexity int, input model.NewTodo) int
 		CreateUser  func(childComplexity int, input model.NewUser) int
 		DeleteTodo  func(childComplexity int, id string) int
 		DeleteTodos func(childComplexity int, input model.DeleteTodos) int
+		LoginUser   func(childComplexity int, input model.NewLogin) int
 		UpdateTodo  func(childComplexity int, input model.UpdateTodo) int
 	}
 
@@ -107,6 +113,7 @@ type MutationResolver interface {
 	DeleteTodo(ctx context.Context, id string) (*model.DeleteTodoPayload, error)
 	DeleteTodos(ctx context.Context, input model.DeleteTodos) (*model.DeleteTodosPayload, error)
 	CreateUser(ctx context.Context, input model.NewUser) (*model.CreateUserPayload, error)
+	LoginUser(ctx context.Context, input model.NewLogin) (*model.LoginUserPayload, error)
 }
 type QueryResolver interface {
 	GetTodo(ctx context.Context, id string) (*model.Todo, error)
@@ -177,6 +184,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.DeleteTodosPayload.Message(childComplexity), true
 
+	case "LoginUserPayload.message":
+		if e.complexity.LoginUserPayload.Message == nil {
+			break
+		}
+
+		return e.complexity.LoginUserPayload.Message(childComplexity), true
+	case "LoginUserPayload.user":
+		if e.complexity.LoginUserPayload.User == nil {
+			break
+		}
+
+		return e.complexity.LoginUserPayload.User(childComplexity), true
+
 	case "Mutation.createTodo":
 		if e.complexity.Mutation.CreateTodo == nil {
 			break
@@ -221,6 +241,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.DeleteTodos(childComplexity, args["input"].(model.DeleteTodos)), true
+	case "Mutation.LoginUser":
+		if e.complexity.Mutation.LoginUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_LoginUser_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.LoginUser(childComplexity, args["input"].(model.NewLogin)), true
 	case "Mutation.updateTodo":
 		if e.complexity.Mutation.UpdateTodo == nil {
 			break
@@ -347,6 +378,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputDeleteTodos,
+		ec.unmarshalInputNewLogin,
 		ec.unmarshalInputNewTodo,
 		ec.unmarshalInputNewUser,
 		ec.unmarshalInputUpdateTodo,
@@ -465,6 +497,17 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_LoginUser_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNNewLogin2learn_gqlgenᚋgraphᚋmodelᚐNewLogin)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createTodo_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
@@ -812,6 +855,78 @@ func (ec *executionContext) fieldContext_DeleteTodosPayload_message(_ context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _LoginUserPayload_user(ctx context.Context, field graphql.CollectedField, obj *model.LoginUserPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LoginUserPayload_user,
+		func(ctx context.Context) (any, error) {
+			return obj.User, nil
+		},
+		nil,
+		ec.marshalNUser2ᚖlearn_gqlgenᚋgraphᚋmodelᚐUser,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_LoginUserPayload_user(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LoginUserPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "passwordHashed":
+				return ec.fieldContext_User_passwordHashed(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_User_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_User_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LoginUserPayload_message(ctx context.Context, field graphql.CollectedField, obj *model.LoginUserPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LoginUserPayload_message,
+		func(ctx context.Context) (any, error) {
+			return obj.Message, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_LoginUserPayload_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LoginUserPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -1051,6 +1166,53 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_LoginUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_LoginUser,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().LoginUser(ctx, fc.Args["input"].(model.NewLogin))
+		},
+		nil,
+		ec.marshalOLoginUserPayload2ᚖlearn_gqlgenᚋgraphᚋmodelᚐLoginUserPayload,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_LoginUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "user":
+				return ec.fieldContext_LoginUserPayload_user(ctx, field)
+			case "message":
+				return ec.fieldContext_LoginUserPayload_message(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LoginUserPayload", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_LoginUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -3170,6 +3332,40 @@ func (ec *executionContext) unmarshalInputDeleteTodos(ctx context.Context, obj a
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewLogin(ctx context.Context, obj any) (model.NewLogin, error) {
+	var it model.NewLogin
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"email", "password"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "email":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Email = data
+		case "password":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Password = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj any) (model.NewTodo, error) {
 	var it model.NewTodo
 	asMap := map[string]any{}
@@ -3301,6 +3497,13 @@ func (ec *executionContext) _MutationPayload(ctx context.Context, sel ast.Select
 			return graphql.Null
 		}
 		return ec._UpdatedTodoPayload(ctx, sel, obj)
+	case model.LoginUserPayload:
+		return ec._LoginUserPayload(ctx, sel, &obj)
+	case *model.LoginUserPayload:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._LoginUserPayload(ctx, sel, obj)
 	case model.DeleteTodosPayload:
 		return ec._DeleteTodosPayload(ctx, sel, &obj)
 	case *model.DeleteTodosPayload:
@@ -3472,6 +3675,50 @@ func (ec *executionContext) _DeleteTodosPayload(ctx context.Context, sel ast.Sel
 	return out
 }
 
+var loginUserPayloadImplementors = []string{"LoginUserPayload", "MutationPayload"}
+
+func (ec *executionContext) _LoginUserPayload(ctx context.Context, sel ast.SelectionSet, obj *model.LoginUserPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, loginUserPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LoginUserPayload")
+		case "user":
+			out.Values[i] = ec._LoginUserPayload_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "message":
+			out.Values[i] = ec._LoginUserPayload_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -3510,6 +3757,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "createUser":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createUser(ctx, field)
+			})
+		case "LoginUser":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_LoginUser(ctx, field)
 			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -4196,6 +4447,11 @@ func (ec *executionContext) marshalNID2ᚕstringᚄ(ctx context.Context, sel ast
 	return ret
 }
 
+func (ec *executionContext) unmarshalNNewLogin2learn_gqlgenᚋgraphᚋmodelᚐNewLogin(ctx context.Context, v any) (model.NewLogin, error) {
+	res, err := ec.unmarshalInputNewLogin(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNNewTodo2learn_gqlgenᚋgraphᚋmodelᚐNewTodo(ctx context.Context, v any) (model.NewTodo, error) {
 	res, err := ec.unmarshalInputNewTodo(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4613,6 +4869,13 @@ func (ec *executionContext) marshalODeleteTodosPayload2ᚖlearn_gqlgenᚋgraph�
 		return graphql.Null
 	}
 	return ec._DeleteTodosPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOLoginUserPayload2ᚖlearn_gqlgenᚋgraphᚋmodelᚐLoginUserPayload(ctx context.Context, sel ast.SelectionSet, v *model.LoginUserPayload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._LoginUserPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {

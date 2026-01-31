@@ -40,7 +40,20 @@ type DeleteTodosPayload struct {
 func (DeleteTodosPayload) IsMutationPayload()      {}
 func (this DeleteTodosPayload) GetMessage() string { return this.Message }
 
+type LoginUserPayload struct {
+	User    *User  `json:"user"`
+	Message string `json:"message"`
+}
+
+func (LoginUserPayload) IsMutationPayload()      {}
+func (this LoginUserPayload) GetMessage() string { return this.Message }
+
 type Mutation struct {
+}
+
+type NewLogin struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type NewTodo struct {
