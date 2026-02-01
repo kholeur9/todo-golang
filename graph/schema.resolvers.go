@@ -84,7 +84,6 @@ func (r *mutationResolver) DeleteTodos(ctx context.Context, input model.DeleteTo
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.CreateUserPayload, error) {
-	fmt.Println("User infos : ", input)
 	getNewUser := dto.RegisterInput{
 		Name:     input.Name,
 		Email:    input.Email,
@@ -120,7 +119,8 @@ func (r *mutationResolver) LoginUser(ctx context.Context, input model.NewLogin) 
 			Name:  user.User.Name,
 			Email: user.User.Email,
 		},
-		Message: user.Message,
+		AccessToken: user.AccessToken,
+		Message:     user.Message,
 	}, nil
 }
 

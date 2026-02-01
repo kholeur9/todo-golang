@@ -41,8 +41,9 @@ func (DeleteTodosPayload) IsMutationPayload()      {}
 func (this DeleteTodosPayload) GetMessage() string { return this.Message }
 
 type LoginUserPayload struct {
-	User    *User  `json:"user"`
-	Message string `json:"message"`
+	User        *User  `json:"user"`
+	AccessToken string `json:"accessToken"`
+	Message     string `json:"message"`
 }
 
 func (LoginUserPayload) IsMutationPayload()      {}

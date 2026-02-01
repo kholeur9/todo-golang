@@ -65,8 +65,9 @@ type ComplexityRoot struct {
 	}
 
 	LoginUserPayload struct {
-		Message func(childComplexity int) int
-		User    func(childComplexity int) int
+		AccessToken func(childComplexity int) int
+		Message     func(childComplexity int) int
+		User        func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -184,6 +185,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.DeleteTodosPayload.Message(childComplexity), true
 
+	case "LoginUserPayload.accessToken":
+		if e.complexity.LoginUserPayload.AccessToken == nil {
+			break
+		}
+
+		return e.complexity.LoginUserPayload.AccessToken(childComplexity), true
 	case "LoginUserPayload.message":
 		if e.complexity.LoginUserPayload.Message == nil {
 			break
@@ -898,6 +905,35 @@ func (ec *executionContext) fieldContext_LoginUserPayload_user(_ context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _LoginUserPayload_accessToken(ctx context.Context, field graphql.CollectedField, obj *model.LoginUserPayload) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LoginUserPayload_accessToken,
+		func(ctx context.Context) (any, error) {
+			return obj.AccessToken, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_LoginUserPayload_accessToken(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LoginUserPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _LoginUserPayload_message(ctx context.Context, field graphql.CollectedField, obj *model.LoginUserPayload) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -1199,6 +1235,8 @@ func (ec *executionContext) fieldContext_Mutation_loginUser(ctx context.Context,
 			switch field.Name {
 			case "user":
 				return ec.fieldContext_LoginUserPayload_user(ctx, field)
+			case "accessToken":
+				return ec.fieldContext_LoginUserPayload_accessToken(ctx, field)
 			case "message":
 				return ec.fieldContext_LoginUserPayload_message(ctx, field)
 			}
@@ -3688,6 +3726,11 @@ func (ec *executionContext) _LoginUserPayload(ctx context.Context, sel ast.Selec
 			out.Values[i] = graphql.MarshalString("LoginUserPayload")
 		case "user":
 			out.Values[i] = ec._LoginUserPayload_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "accessToken":
+			out.Values[i] = ec._LoginUserPayload_accessToken(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

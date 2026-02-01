@@ -2,6 +2,7 @@ package main
 
 import (
 	user_entity "learn_gqlgen/auth/entity"
+	"learn_gqlgen/auth/middleware"
 	user_memory "learn_gqlgen/auth/repository/memory"
 	user_service "learn_gqlgen/auth/services"
 	"learn_gqlgen/graph"
@@ -52,7 +53,7 @@ func main() {
 	})
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	http.Handle("/query", middleware.JWTMiddleware(srv))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))

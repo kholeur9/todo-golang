@@ -71,21 +71,26 @@ func (asi *AuthServicesImpl) Login(ctx context.Context, input dto.LoginInput) (*
 	if input.Email == "" || input.Password == "" {
 		return nil, errors_auth.ErrInfoNotCompleted
 	}
-	user, err := asi.repo.FindUserByEmail(input.Email)
+	userExists, err := asi.repo.FindUserByEmail(input.Email)
 	if err != nil {
 		return nil, err
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(input.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(userExists.HashedPassword), []byte(input.Password))
 	if err != nil {
 		return nil, errors_auth.ErrIncorrectCredentials
 	}
 	// Login User
+	user := entity.User{
+		ID: userExists.ID,
+	}
+	accessToken := GenerateAccessToken(user)
 	return &dto.LoginResult{
 		User: &entity.User{
-			ID: user.ID,
-			Name: user.Name,
-			Email: user.Email,
+			ID: userExists.ID,
+			Name: userExists.Name,
+			Email: userExists.Email,
 		},
+		AccessToken: accessToken,
 		Message: "",
 	}, nil
 }

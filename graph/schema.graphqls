@@ -54,6 +54,7 @@ type CreateUserPayload implements MutationPayload {
 
 type LoginUserPayload implements MutationPayload {
   user: User!
+  accessToken: String!
   message: String!
 }
 
