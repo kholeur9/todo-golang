@@ -2,6 +2,7 @@ package services
 
 import (
 	//"fmt"
+	"fmt"
 	"learn_gqlgen/auth/entity"
 	"log"
 	"os"
@@ -25,4 +26,19 @@ func GenerateAccessToken(user entity.User) string {
 		return ""
 	}
 	return tokenString
+}
+
+func DecodeToken(tokenAuth string) (string, error) {
+	token, err := jwt.Parse(tokenAuth, func(tokenAuth *jwt.Token) (any, error) {
+		return key, nil
+	}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
+	if err != nil {
+		return "", fmt.Errorf("Unauthorized")
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", fmt.Errorf("Unauthorized")
+	}
+	userID := claims["sub"].(string)
+	return userID, nil
 }

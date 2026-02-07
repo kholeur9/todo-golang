@@ -7,6 +7,7 @@ package graph
 
 import (
 	"context"
+	//"errors"
 	"fmt"
 	"learn_gqlgen/auth/dto"
 	"learn_gqlgen/graph/model"
@@ -15,9 +16,13 @@ import (
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
+	if errorAuth := ctx.Value("authError"); errorAuth != nil {
+		return nil, errorAuth.(error)
+	}
+	userID := ctx.Value("userID").(string)
 	getNewTodo := &entity_todo.NewTodo{
 		Text:   input.Text,
-		UserID: input.UserID,
+		UserID: userID,
 	}
 	if r.TodoService == nil {
 		return nil, fmt.Errorf("Service non initié !")
