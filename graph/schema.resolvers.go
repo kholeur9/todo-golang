@@ -9,6 +9,7 @@ import (
 	"context"
 	//"errors"
 	"fmt"
+	"learn_gqlgen/auth"
 	"learn_gqlgen/auth/dto"
 	"learn_gqlgen/graph/model"
 	entity_todo "learn_gqlgen/todo/entity"
@@ -16,7 +17,7 @@ import (
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	if errorAuth := ctx.Value("authError"); errorAuth != nil {
+	if errorAuth := auth.IsAuthenticated(ctx); errorAuth != nil {
 		return nil, errorAuth.(error)
 	}
 	userID := ctx.Value("userID").(string)
@@ -35,12 +36,18 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		ID:        res.ID,
 		Text:      res.Text,
 		Done:      res.Done,
+		User: &model.User{
+			ID: res.User.ID,
+		},
 		CreatedAt: res.CreatedAt,
 	}, nil
 }
 
 // UpdateTodo is the resolver for the updateTodo field.
 func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTodo) (*model.UpdatedTodoPayload, error) {
+	if errorAuth := auth.IsAuthenticated(ctx); errorAuth != nil {
+		return nil, errorAuth.(error)
+	}
 	getUpdateTodo := &entity_todo.UpdateTodo{
 		TodoID: input.TodoID,
 		Text:   input.Text,
@@ -64,6 +71,9 @@ func (r *mutationResolver) UpdateTodo(ctx context.Context, input model.UpdateTod
 
 // DeleteTodo is the resolver for the deleteTodo field.
 func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (*model.DeleteTodoPayload, error) {
+	if errorAuth := auth.IsAuthenticated(ctx); errorAuth != nil {
+		return nil, errorAuth.(error)
+	}
 	result, err := r.TodoService.DeleteTodo(ctx, id)
 	if err != nil {
 		return nil, err
@@ -76,6 +86,9 @@ func (r *mutationResolver) DeleteTodo(ctx context.Context, id string) (*model.De
 
 // DeleteTodos is the resolver for the deleteTodos field.
 func (r *mutationResolver) DeleteTodos(ctx context.Context, input model.DeleteTodos) (*model.DeleteTodosPayload, error) {
+	if errorAuth := auth.IsAuthenticated(ctx); errorAuth != nil {
+		return nil, errorAuth.(error)
+	}
 	ids, err := r.TodoService.DeleteTodos(ctx, input.Ids)
 	if err != nil {
 		return nil, err
@@ -131,6 +144,9 @@ func (r *mutationResolver) LoginUser(ctx context.Context, input model.NewLogin) 
 
 // GetTodo is the resolver for the getTodo field.
 func (r *queryResolver) GetTodo(ctx context.Context, id string) (*model.Todo, error) {
+	if errorAuth := auth.IsAuthenticated(ctx); errorAuth != nil {
+		return nil, errorAuth.(error)
+	}
 	todo, err := r.TodoService.GetTodo(ctx, id)
 	if err != nil {
 		return nil, err
@@ -139,6 +155,9 @@ func (r *queryResolver) GetTodo(ctx context.Context, id string) (*model.Todo, er
 		ID:        todo.ID,
 		Text:      todo.Text,
 		Done:      todo.Done,
+		User: &model.User{
+			ID: todo.User.ID,
+		},
 		CreatedAt: todo.CreatedAt,
 		UpdatedAt: todo.UpdatedAt,
 	}, nil
@@ -146,8 +165,12 @@ func (r *queryResolver) GetTodo(ctx context.Context, id string) (*model.Todo, er
 
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
+	if errorAuth := auth.IsAuthenticated(ctx); errorAuth != nil {
+		return nil, errorAuth.(error)
+	}
+	userID := ctx.Value("userID").(string)
 	var todos []*model.Todo
-	allTodos, err := r.TodoService.GetAllTodos(ctx)
+	allTodos, err := r.TodoService.GetAllTodos(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("Erreur lors de la récupération des todos.")
 	}
@@ -156,6 +179,9 @@ func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 			ID:        todo.ID,
 			Text:      todo.Text,
 			Done:      todo.Done,
+			User: 	&model.User{
+				ID: todo.User.ID,
+			},
 			CreatedAt: todo.CreatedAt,
 			UpdatedAt: todo.UpdatedAt,
 		}

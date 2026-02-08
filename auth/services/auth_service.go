@@ -3,9 +3,11 @@ package services
 import (
 	"context"
 	"errors"
+
 	//"fmt"
 
 	//"learn_gqlgen/auth/dto"
+	"learn_gqlgen/auth"
 	"learn_gqlgen/auth/dto"
 	"learn_gqlgen/auth/entity"
 	errors_auth "learn_gqlgen/auth/errors_auth"
@@ -83,7 +85,7 @@ func (asi *AuthServicesImpl) Login(ctx context.Context, input dto.LoginInput) (*
 	user := entity.User{
 		ID: userExists.ID,
 	}
-	accessToken := GenerateAccessToken(user)
+	accessToken := auth.GenerateAccessToken(user)
 	return &dto.LoginResult{
 		User: &entity.User{
 			ID: userExists.ID,

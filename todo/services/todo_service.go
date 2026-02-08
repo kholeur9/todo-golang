@@ -37,7 +37,8 @@ func (tsi *TodoServiceImpl) AddTodo(ctx context.Context, input *entity.NewTodo) 
 		return nil, errors_todo.ErrTodoTextTooLong
 	}
 	text := strings.TrimSpace(input.Text)
-	sameTodoText, err := tsi.repo.FindTodoByText(text)
+	sameTodoText, err := tsi.repo.FindTodoByTextAndUserID(text, input.UserID)
+
 	if err != nil {
 		if !errors.Is(err, errors_todo.ErrTodoNotFound) {
 			return nil, err
@@ -74,8 +75,8 @@ func (tsi *TodoServiceImpl) GetTodo(ctx context.Context, id string) (*entity.Tod
 	return todoExists, nil
 }
 
-func (tsi *TodoServiceImpl) GetAllTodos(ctx context.Context) ([]*entity.Todo, error) {
-	allTodos, err := tsi.repo.FindAllTodos()
+func (tsi *TodoServiceImpl) GetAllTodos(ctx context.Context, userID string) ([]*entity.Todo, error) {
+	allTodos, err := tsi.repo.FindAllTodos(userID)
 	if err != nil {
 		return nil, err
 	}

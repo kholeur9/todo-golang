@@ -4,7 +4,7 @@ import (
 	//"errors"
 	"context"
 	"fmt"
-	"learn_gqlgen/auth/services"
+	"learn_gqlgen/auth"
 	"net/http"
 	"strings"
 )
@@ -42,7 +42,7 @@ func VerifyHeaderToken(w http.ResponseWriter, r *http.Request) (string, error) {
 	}
 
 	token := partsAuthorization[1]
-	userID, err := services.DecodeToken(token)
+	userID, err := auth.DecodeToken(token)
 	if err != nil {
 		return "", err
 	}

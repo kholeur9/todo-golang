@@ -42,8 +42,23 @@ func (ntmi *MemoryImpl) FindTodoByText(text string) (*entity.Todo, error) {
 	return nil, errors_todo.ErrTodoNotFound
 }
 
-func (ntmi *MemoryImpl) FindAllTodos() ([]*entity.Todo, error) {
-	return ntmi.stockTodo, nil
+func (ntmi *MemoryImpl) FindTodoByTextAndUserID(text string, userID string) (*entity.Todo, error) {
+	for _, todo := range ntmi.stockTodo {
+		if todo.User.ID == userID && todo.Text == text {
+			return todo, nil
+		}
+	}
+	return nil, errors_todo.ErrTodoNotFound
+}
+
+func (ntmi *MemoryImpl) FindAllTodos(userID string) ([]*entity.Todo, error) {
+	var userTodos []*entity.Todo
+	for _, todo := range ntmi.stockTodo {
+		if todo.User.ID == userID {
+			userTodos = append(userTodos, todo)
+		}
+	}
+	return userTodos, nil
 }
 
 func (ntmi *MemoryImpl) Update(updateTodo *entity.UpdateTodo) (*entity.Todo, error) {
